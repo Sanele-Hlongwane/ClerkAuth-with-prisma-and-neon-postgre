@@ -1,20 +1,10 @@
 // components/AppNavbar.js
-"use client";
-import React, { useEffect, useState } from 'react';
+
+import React from 'react';
 import { Navbar, NavbarBrand, NavbarMenuToggle, NavbarMenuItem, NavbarMenu, NavbarContent, NavbarItem, Link, Button } from '@nextui-org/react';
 import { AcmeLogo } from './AcmeLogo';
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { checkUser } from '@/lib/checkUser';
-
-interface User {
-  id: string;
-  clerkUserId: string;
-  email: string;
-  name: string | null;
-  imageUrl: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 const menuItems = [
   'Profile',
@@ -29,23 +19,13 @@ const menuItems = [
   'Log Out',
 ];
 
-export default function AppNavbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userData = await checkUser();
-      setUser(userData);
-    };
-
-    fetchUser();
-  }, []);
+const AppNavbar = async () => {
+  const user = await checkUser();
 
   return (
-    <Navbar isBordered isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen}>
+    <Navbar isBordered>
       <NavbarContent className="sm:hidden" justify="start">
-        <NavbarMenuToggle aria-label={isMenuOpen ? 'Close menu' : 'Open menu'} />
+        <NavbarMenuToggle aria-label="Open menu" />
       </NavbarContent>
 
       <NavbarContent className="sm:hidden pr-3" justify="center">
@@ -79,23 +59,12 @@ export default function AppNavbar() {
 
       <NavbarContent justify="end">
         <NavbarItem>
-          {user ? (
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-          ) : (
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-          )}
-        </NavbarItem>
-        <NavbarItem className="hidden lg:flex">
-          <Link href="#">Login</Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Button as={Link} color="warning" href="#" variant="flat">
-            Sign Up
-          </Button>
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </NavbarItem>
       </NavbarContent>
 
@@ -115,4 +84,6 @@ export default function AppNavbar() {
       </NavbarMenu>
     </Navbar>
   );
-}
+};
+
+export default AppNavbar;
